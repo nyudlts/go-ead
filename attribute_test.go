@@ -18,8 +18,8 @@ func TestInternalAudiencePass(t *testing.T) {
 
 func TestInternalAudienceFail(t *testing.T) {
 
-	pass := b.Get("/faids/FAIL-internal-audience.xml")
-	result, err := ContainsInternalAudienceAttr(pass)
+	fail := b.Get("/faids/FAIL-internal-audience.xml")
+	result, err := ContainsInternalAudienceAttr(fail)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
