@@ -1,29 +1,40 @@
 package go_ead
 
 import (
+	"io/ioutil"
 	"testing"
 )
 
 func TestInternalAudiencePass(t *testing.T) {
 
-	pass := b.Get("/faids/PASS.xml")
-	result, err := ContainsInternalAudienceAttr(pass)
+	ead, err := ioutil.ReadFile("static/faids/PASS.xml")
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Error(err)
 	}
-	if result == true {
+
+	result, err := ContainsInternalAudienceAttr(ead)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(result) != 0 {
 		t.Error("EAD contained internal audience content")
 	}
 }
 
 func TestInternalAudienceFail(t *testing.T) {
 
-	fail := b.Get("/faids/FAIL-internal-audience.xml")
-	result, err := ContainsInternalAudienceAttr(fail)
+	ead, err := ioutil.ReadFile("static/faids/FAIL-internal-audience.xml")
+
+	result, err := ContainsInternalAudienceAttr(ead)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Error(err)
 	}
-	if result != true {
+	if len(result) != 1 {
 		t.Error("EAD did not contain internal audience content")
+	}
+
+	if result[0] != "editionstmt" {
+		t.Errorf("editionstmt element was not returned, received %s", result[0])
 	}
 }

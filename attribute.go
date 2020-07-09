@@ -5,28 +5,28 @@ import (
 	"github.com/lestrrat-go/libxml2/xpath"
 )
 
-func ContainsInternalAudienceAttr(faid []byte) (bool, error) {
-	default_result := false
+func ContainsInternalAudienceAttr(faid []byte) ([]string, error) {
+	elements := []string{}
+
 	doc, err := libxml2.Parse(faid)
 	if err != nil {
-		return default_result, err
+		return elements, err
 	}
 	defer doc.Free()
 	root, err := doc.DocumentElement()
 	ctx, err := xpath.NewContext(root)
 	if err != nil {
-		return default_result, err
+		return elements, err
 	}
 	defer ctx.Free()
 	if err := ctx.RegisterNS(prefix, nsuri); err != nil {
-		return default_result, err
+		return elements, err
 	}
-	n := xpath.NodeList(ctx.Find(`//ead:*[@audience="internal"]`))
+	nodelist := xpath.NodeList(ctx.Find(`//ead:*[@audience="internal"]`))
 
-	if len(n) != 0 {
-		return true, nil
-	} else {
-		return false, nil
+	for i := 0; i < len(nodelist); i++ {
+		elements = append(elements, nodelist[i].NodeName())
 	}
 
+	return elements, nil
 }
